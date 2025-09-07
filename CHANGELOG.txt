@@ -2,3 +2,4 @@
 - Fixed errors on map start
 - Renamed options menu to match addon title
 - Added option to disable expensive blood stream particle
+- Fixed red blood coming out of things it should not

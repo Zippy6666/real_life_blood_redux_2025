@@ -28,6 +28,9 @@ if SERVER then
 	hook.Add("CreateEntityRagdoll", "BloodStream_ApplyEffect", function(ent, rag)
 		if !realistic_blood_ubtm_blood_stream:GetBool() then return end
 		if !ent.bloodstream_lastdmglpos then return end
+		local mat = ent:GetMaterialType()
+		local hasRedBlood = ent.RealLifeBloodRedux_OGBloodColor == BLOOD_COLOR_RED
+		if !hasRedBlood && mat != MAT_FLESH then return end
 
 		local bone = ent.bloodstream_lastdmgbone
 

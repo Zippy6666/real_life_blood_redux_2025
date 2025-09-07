@@ -19,36 +19,41 @@ BM_DebugBone = {}
 BM_EnabledMaterials = {MAT_BLOODYFLESH, MAT_FLESH}
 
 function BMEntityDamaged(ent, dmginfo)
+	-- Is NPC, nextbot, player, or ragdoll check
+	if !(ent:IsNextBot() || ent:IsNPC() || ent:IsPlayer() || ent:GetClass()=="prop_ragdoll") then return end
+
+	-- Has red blood check
 	local mat = ent:GetMaterialType()
-	if (!ent:GetMaterialType() or (!table.HasValue(BM_EnabledMaterials, mat) and !(mat == 67 and ent:IsNPC()))) and !ent:IsPlayer() then return end
-	
-	local effectdata = EffectData()
-	effectdata:SetOrigin( dmginfo:GetDamagePosition( ) )
-	effectdata:SetNormal( dmginfo:GetDamageForce():Angle():Forward() )
-	effectdata:SetEntity(ent)
-	effectdata:SetMagnitude(dmginfo:GetDamage())
-	
-	
-	util.Effect( "hotline_bloodspray", effectdata )
+	local hasRedBlood = ent.RealLifeBloodRedux_OGBloodColor == BLOOD_COLOR_RED
+	if !hasRedBlood && mat != MAT_FLESH then return end
+
+		-- Missing particle...
+	-- local effectdata = EffectData()
+	-- effectdata:SetOrigin( dmginfo:GetDamagePosition( ) )
+	-- effectdata:SetNormal( dmginfo:GetDamageForce():Angle():Forward() )
+	-- effectdata:SetEntity(ent)
+	-- effectdata:SetMagnitude(dmginfo:GetDamage())
+	-- util.Effect( "hotline_bloodspray", effectdata )
 	
 	local len = dmginfo:GetDamageForce():Length()/1
+
 	for i = 0, math.random(0,3) do
-		util.Decal( "blood", dmginfo:GetDamagePosition( )-dmginfo:GetDamageForce():Angle():Forward()*8, dmginfo:GetDamagePosition( )+Vector(math.random(-len,len),math.random(-len,len),math.random(-len,len)))
+		util.Decal( "blood", dmginfo:GetDamagePosition( )-dmginfo:GetDamageForce():Angle():Forward()*8, 
+					dmginfo:GetDamagePosition( )+Vector(math.random(-len,len),math.random(-len,len),math.random(-len,len)))
 	end
-	
-	
-	
-	if math.random(0,3) ==3 then 
-		local tr = {}
-		tr.start = dmginfo:GetDamagePosition( )
-		tr.endpos = dmginfo:GetDamagePosition( )+dmginfo:GetDamageForce():Angle():Forward()*16
-		tr.filter = function(e) return e == ent end
-		tr.ignoreworld = true
-		tr = util.TraceLine(tr)
-		if !IsValid(tr.Entity) then return end
-		effectdata:SetAttachment(tr.Entity:TranslatePhysBoneToBone(tr.PhysicsBone))
-		util.Effect( "BloodDrip", effectdata ) 
-	end
+
+	-- Missing particle..
+	-- if math.random(0,3) ==3 then 
+	-- 	local tr = {}
+	-- 	tr.start = dmginfo:GetDamagePosition( )
+	-- 	tr.endpos = dmginfo:GetDamagePosition( )+dmginfo:GetDamageForce():Angle():Forward()*16
+	-- 	tr.filter = function(e) return e == ent end
+	-- 	tr.ignoreworld = true
+	-- 	tr = util.TraceLine(tr)
+	-- 	if !IsValid(tr.Entity) then return end
+	-- 	effectdata:SetAttachment(tr.Entity:TranslatePhysBoneToBone(tr.PhysicsBone))
+	-- 	util.Effect( "BloodDrip", effectdata ) 
+	-- end
 end
 hook.Add("EntityTakeDamage", "BMEntDamaged", BMEntityDamaged)
 
