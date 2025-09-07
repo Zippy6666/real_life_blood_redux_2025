@@ -7,10 +7,16 @@ local vec_min = -vec_max
 
 function DMGINFO:GetHitPhysBone(ent)
 	local mdl = ent:GetModel()
+	if !mdl || mdl == "" || mdl == "models/error.mdl" then return end
 
 	local colls = COLL_CACHE[mdl]
 	if !colls then
 		colls = CreatePhysCollidesFromModel(mdl)
+		if !colls then
+			-- Could not create PhysCollides
+			return
+		end
+		
 		COLL_CACHE[mdl] = colls
 	end
 
@@ -27,7 +33,7 @@ function DMGINFO:GetHitPhysBone(ent)
 		local bone = ent:TranslatePhysBoneToBone(phys_bone)
 		local pos, ang = ent:GetBonePosition(bone)
 		
-		if coll:TraceBox(pos, ang, ray_start, ray_end, vec_min, vec_max) then
+		if pos && ang && coll:TraceBox(pos, ang, ray_start, ray_end, vec_min, vec_max) then
 			return phys_bone
 		end
 	end
