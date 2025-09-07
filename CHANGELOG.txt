@@ -1,0 +1,4 @@
+[2025-09-07]
+- Fixed errors on map start
+- Renamed options menu to match addon title
+- Added option to disable expensive blood stream particle
